@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Coventine Digital — AI Recruitment Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#f0f4ff 0%,#fdf6ff 50%,#f0fdf9 100%);min-height:100vh;color:#2d3748}
+
+/* BLOBS */
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.35;pointer-events:none;z-index:0}
+.blob1{width:420px;height:420px;background:radial-gradient(circle,#c7d2fe,#a5b4fc);top:-120px;left:-100px;animation:float1 8s ease-in-out infinite}
+.blob2{width:360px;height:360px;background:radial-gradient(circle,#d1fae5,#6ee7b7);bottom:-100px;right:-80px;animation:float2 10s ease-in-out infinite}
+.blob3{width:280px;height:280px;background:radial-gradient(circle,#fde68a,#fca5a5);top:40%;left:60%;animation:float3 12s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,20px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,-30px)}}
+@keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,15px)}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);border-bottom:1px solid #e8eaf6;padding:0 2rem;height:62px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#5b6ef5,#a78bfa);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;font-weight:700}
+.nav-name{font-weight:700;font-size:1rem;background:linear-gradient(135deg,#5b6ef5,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-pill{background:linear-gradient(135deg,#ede9fe,#e0e7ff);color:#5b6ef5;font-size:.72rem;font-weight:600;padding:5px 14px;border-radius:20px;border:1px solid #c7d2fe}
+.api-indicator{display:flex;align-items:center;gap:6px;font-size:.75rem;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;padding:5px 12px;border-radius:20px}
+.dot{width:8px;height:8px;border-radius:50%;background:#e2e8f0}
+.dot.connected{background:#10b981;box-shadow:0 0 0 3px #d1fae5}
+
+/* PAGE WRAPPER */
+.page{position:relative;z-index:1}
+
+/* HERO */
+.hero{text-align:center;padding:52px 2rem 36px}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ede9fe,#e0e7ff);color:#7c3aed;font-size:.78rem;font-weight:600;padding:6px 18px;border-radius:20px;margin-bottom:18px;border:1px solid #ddd6fe}
+.hero h1{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:700;line-height:1.2;margin-bottom:12px;background:linear-gradient(135deg,#3730a3,#5b6ef5,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1rem;color:#64748b;max-width:500px;margin:0 auto 28px;line-height:1.7}
+
+/* MODE TABS */
+.tabs{display:flex;background:rgba(255,255,255,.7);border-radius:16px;padding:6px;max-width:420px;margin:0 auto 36px;border:1px solid #e2e8f0;box-shadow:0 2px 12px rgba(100,116,185,.08)}
+.tab-btn{flex:1;padding:10px 18px;border-radius:12px;border:none;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .25s;background:transparent;color:#94a3b8}
+.tab-btn.active-jd{background:linear-gradient(135deg,#5b6ef5,#7c3aed);color:#fff;box-shadow:0 4px 14px rgba(91,110,245,.3)}
+.tab-btn.active-screen{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;box-shadow:0 4px 14px rgba(16,185,129,.3)}
+
+/* CONTAINER */
+.container{max-width:1080px;margin:0 auto;padding:0 1.5rem 70px}
+
+/* API CONFIG BANNER */
+.api-banner{background:rgba(255,255,255,.9);border:1.5px solid #c7d2fe;border-radius:16px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 2px 16px rgba(91,110,245,.08)}
+.api-banner-left{display:flex;align-items:center;gap:12px}
+.api-banner-icon{width:38px;height:38px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.api-banner-text .title{font-size:.9rem;font-weight:600;color:#1e293b}
+.api-banner-text .sub{font-size:.75rem;color:#94a3b8;margin-top:2px}
+.api-input-row{display:flex;gap:8px;align-items:center}
+.api-input-row input{width:300px;padding:9px 14px;border:1.5px solid #c7d2fe;border-radius:10px;font-size:.83rem;font-family:'Inter',sans-serif;outline:none;background:#fafbff;color:#334155}
+.api-input-row input:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px rgba(165,180,252,.2)}
+.btn-sm{padding:9px 18px;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-save{background:linear-gradient(135deg,#5b6ef5,#7c3aed);color:#fff;box-shadow:0 3px 10px rgba(91,110,245,.3)}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(91,110,245,.4)}
+
+/* PANELS */
+.panel{display:none}
+.panel.active{display:block}
+
+/* CARD */
+.card{background:rgba(255,255,255,.9);border-radius:20px;padding:28px;border:1px solid rgba(255,255,255,.95);box-shadow:0 4px 24px rgba(100,116,185,.08);transition:box-shadow .2s}
+.card:hover{box-shadow:0 8px 32px rgba(100,116,185,.13)}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.card-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.icon-purple{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.icon-teal{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.card-title{font-size:1rem;font-weight:600;color:#1e293b}
+.card-sub{font-size:.76rem;color:#94a3b8;margin-top:2px}
+
+/* FORM */
+.form-row{margin-bottom:16px}
+label{display:block;font-size:.76rem;font-weight:600;color:#475569;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+textarea,input[type=text],select{width:100%;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:11px 14px;font-size:.88rem;font-family:'Inter',sans-serif;color:#334155;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical}
+textarea{min-height:100px}
+textarea:focus,input[type=text]:focus,select:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px rgba(165,180,252,.2);background:#fff}
+
+/* TAGS */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.tag{font-size:.74rem;padding:5px 13px;border-radius:20px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .2s;user-select:none}
+.tag-purple{background:#ede9fe;color:#6d28d9;border-color:#ddd6fe}
+.tag-teal{background:#d1fae5;color:#047857;border-color:#a7f3d0}
+.tag-blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}
+.tag-rose{background:#ffe4e6;color:#be123c;border-color:#fecdd3}
+.tag-amber{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.tag.selected{transform:scale(1.05);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+
+/* GRID */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.api-input-row input{width:100%}.api-banner{flex-direction:column;align-items:flex-start}}
+
+/* BUTTONS */
+.btn{width:100%;padding:13px 20px;border-radius:14px;font-size:.95rem;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .25s;margin-top:6px}
+.btn-primary{background:linear-gradient(135deg,#5b6ef5,#7c3aed);color:#fff;box-shadow:0 4px 16px rgba(91,110,245,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(91,110,245,.4)}
+.btn-primary:disabled{opacity:.6;transform:none;cursor:not-allowed}
+.btn-teal{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,.25)}
+.btn-teal:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(16,185,129,.35)}
+.btn-teal:disabled{opacity:.6;transform:none;cursor:not-allowed}
+
+/* OUTPUT */
+.output-card{background:rgba(255,255,255,.95);border-radius:20px;padding:28px;border:1px solid #e0e7ff;box-shadow:0 4px 24px rgba(100,116,185,.08);margin-top:0}
+.output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.output-title-row{display:flex;align-items:center;gap:10px}
+.output-title{font-size:1rem;font-weight:600;color:#1e293b}
+.action-btns{display:flex;gap:8px;flex-wrap:wrap}
+.action-btn{padding:7px 15px;border-radius:10px;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid #e2e8f0;background:#fff;color:#475569;transition:all .2s}
+.action-btn:hover{background:#f1f5f9}
+.action-btn.copy-btn{border-color:#a5b4fc;color:#4338ca;background:#eef2ff}
+.action-btn.pdf-btn{border-color:#6ee7b7;color:#047857;background:#ecfdf5}
+.action-btn:disabled{opacity:.5;cursor:not-allowed}
+
+.output-body{background:linear-gradient(135deg,#fafbff,#f8fffe);border-radius:14px;padding:22px;min-height:180px;border:1.5px dashed #c7d2fe;font-size:.875rem;line-height:1.85;color:#374151;white-space:pre-wrap;font-family:'Inter',sans-serif}
+.placeholder-box{display:flex;flex-direction:column;align-items:center;justify-content:center;height:160px;gap:10px;color:#a5b4fc}
+.placeholder-box .ph-icon{font-size:2.4rem}
+.placeholder-box p{font-size:.85rem;font-weight:500;color:#94a3b8}
+
+/* SPINNER */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:160px;gap:14px}
+.spinner{width:40px;height:40px;border:4px solid #e0e7ff;border-top-color:#5b6ef5;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-text{font-size:.85rem;color:#64748b;font-weight:500}
+
+/* SCORE ROW */
+.score-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.score-box{background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-radius:14px;padding:16px;text-align:center;border:1px solid #e2e8f0}
+.score-val{font-size:1.5rem;font-weight:700}
+.score-lbl{font-size:.72rem;color:#94a3b8;font-weight:500;margin-top:2px}
+.score-green{color:#10b981}.score-amber{color:#f59e0b}.score-purple{color:#7c3aed}.score-red{color:#ef4444}
+
+/* BADGE */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-pass{background:#d1fae5;color:#065f46}
+.badge-border{background:#fef3c7;color:#92400e}
+.badge-fail{background:#ffe4e6;color:#be123c}
+.badge-ready{background:#e0e7ff;color:#3730a3}
+
+/* INFO STRIP */
+.info-strip{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+.info-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:7px 13px;font-size:.75rem;color:#475569;font-weight:500}
+
+/* ALERT */
+.alert{padding:12px 16px;border-radius:12px;font-size:.83rem;font-weight:500;margin-bottom:16px;display:none}
+.alert.show{display:block}
+.alert-error{background:#ffe4e6;color:#be123c;border:1px solid #fecdd3}
+.alert-success{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0}
+.alert-warn{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+
+/* FOOTER */
+footer{text-align:center;padding:22px;font-size:.75rem;color:#94a3b8;border-top:1px solid #e8eaf6;background:rgba(255,255,255,.6);position:relative;z-index:1}
+footer strong{color:#5b6ef5}
+
+/* MARKDOWN STYLES inside output */
+.md-output h1{font-size:1.2rem;font-weight:700;color:#1e293b;margin:14px 0 8px;border-bottom:2px solid #e0e7ff;padding-bottom:6px}
+.md-output h2{font-size:1rem;font-weight:700;color:#3730a3;margin:14px 0 7px}
+.md-output h3{font-size:.9rem;font-weight:600;color:#5b6ef5;margin:12px 0 6px}
+.md-output ul{padding-left:18px;margin:6px 0}
+.md-output ul li{margin-bottom:4px;color:#374151}
+.md-output p{margin-bottom:8px;color:#374151}
+.md-output strong{color:#1e293b}
+.md-output code{background:#ede9fe;color:#5b21b6;padding:2px 7px;border-radius:6px;font-size:.82rem}
+.md-output pre{background:#f1f5f9;border-radius:10px;padding:14px;overflow-x:auto;margin:10px 0;border:1px solid #e2e8f0}
+.md-output pre code{background:none;color:#334155;padding:0}
+.md-output hr{border:none;border-top:1px solid #e2e8f0;margin:12px 0}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND BLOBS -->
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="nav-logo-icon">✦</div>
+    <span class="nav-name">Coventine Digital</span>
+  </a>
+  <div class="nav-right">
+    <div class="api-indicator">
+      <div class="dot" id="apiDot"></div>
+      <span id="apiStatus">API Not Connected</span>
+    </div>
+    <div class="nav-pill">✦ AI Recruitment Suite</div>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-pill">⚡ Powered by Llama 3.3 · Built for Coventine Digital</div>
+  <h1>Smart Hiring,<br/>Beautifully Simple</h1>
+  <p>Generate polished job descriptions & screen candidates instantly — two powerful modes in one seamless workflow.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active-jd" onclick="switchTab('jd',this)">📝 JD Generator</button>
+    <button class="tab-btn" onclick="switchTab('screen',this)">🔍 Candidate Screener</button>
+  </div>
+</div>
+
+<!-- CONTAINER -->
+<div class="container">
+
+  <!-- API BANNER -->
+  <div class="api-banner">
+    <div class="api-banner-left">
+      <div class="api-banner-icon">🔑</div>
+      <div class="api-banner-text">
+        <div class="title">Hugging Face API Key</div>
+        <div class="sub">Connect your HF token to enable AI generation (Llama 3.3 70B)</div>
+      </div>
+    </div>
+    <div class="api-input-row">
+      <input type="text" id="apiKeyInput" placeholder="hf_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
+      <button class="btn-sm btn-save" onclick="saveApiKey()">Connect ✦</button>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alert" id="alertBox"></div>
+
+  <!-- ── PANEL: JD GENERATOR ── -->
+  <div class="panel active" id="panel-jd">
+    <div class="two-col">
+      <!-- INPUT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-purple">📝</div>
+          <div>
+            <div class="card-title">Job Description Input</div>
+            <div class="card-sub">Rough idea → publish-ready JD</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Role / Brief Description *</label>
+          <textarea id="jdInput" placeholder="e.g. Need a React developer, 2 years exp, remote, startup vibe, working on a SaaS product…"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label>Company Name <span style="color:#cbd5e1;font-weight:400">(optional)</span></label>
+          <input type="text" id="jdCompany" placeholder="e.g. Coventine Digital Pvt Ltd"/>
+        </div>
+
+        <div class="form-row">
+          <label>Location <span style="color:#cbd5e1;font-weight:400">(optional)</span></label>
+          <input type="text" id="jdLocation" placeholder="e.g. Bengaluru, IN / Remote"/>
+        </div>
+
+        <div class="form-row">
+          <label>Seniority Level</label>
+          <select id="jdLevel">
+            <option value="">— Select —</option>
+            <option>Junior (0–2 yrs)</option>
+            <option>Mid-level (2–5 yrs)</option>
+            <option>Senior (5+ yrs)</option>
+            <option>Lead / Principal</option>
+            <option>Manager / Director</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Work Setup</label>
+          <div class="tag-row">
+            <span class="tag tag-blue" onclick="toggleTag(this,'setup')">🏠 Remote</span>
+            <span class="tag tag-teal" onclick="toggleTag(this,'setup')">🏢 On-site</span>
+            <span class="tag tag-purple" onclick="toggleTag(this,'setup')">🔄 Hybrid</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Tone</label>
+          <div class="tag-row">
+            <span class="tag tag-amber" onclick="toggleTag(this,'tone')">🚀 Startup</span>
+            <span class="tag tag-blue" onclick="toggleTag(this,'tone')">🏦 Corporate</span>
+            <span class="tag tag-rose" onclick="toggleTag(this,'tone')">💡 Creative</span>
+            <span class="tag tag-teal" onclick="toggleTag(this,'tone')">🤝 Friendly</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="jdBtn" onclick="generateJD()">✦ Generate Job Description</button>
+      </div>
+
+      <!-- JD OUTPUT -->
+      <div class="output-card" style="margin-top:0">
+        <div class="output-header">
+          <div class="output-title-row">
+            <div class="card-icon icon-purple" style="width:36px;height:36px;font-size:.95rem">📄</div>
+            <div class="output-title">Generated Job Description</div>
+            <span class="status-badge badge-ready" id="jdBadge">● Ready</span>
+          </div>
+          <div class="action-btns">
+            <button class="action-btn copy-btn" onclick="copyOutput('jdOutput')" id="jdCopyBtn" disabled>📋 Copy</button>
+            <button class="action-btn" onclick="clearOutput('jd')" id="jdClearBtn" disabled>🗑 Clear</button>
+          </div>
+        </div>
+        <div class="output-body" id="jdOutput">
+          <div class="placeholder-box">
+            <div class="ph-icon">📝</div>
+            <p>Your polished JD will appear here…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PANEL: CANDIDATE SCREENER ── -->
+  <div class="panel" id="panel-screen">
+    <div class="two-col">
+      <!-- SCREENER INPUT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-teal">🔍</div>
+          <div>
+            <div class="card-title">Candidate Screener</div>
+            <div class="card-sub">ATS + Mercer IPE evaluation</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Paste Full Job Description *</label>
+          <textarea id="screenJD" placeholder="Paste the complete job description here…" style="min-height:130px"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label>Paste Candidate Resume / CV *</label>
+          <textarea id="screenCV" placeholder="Paste the candidate's full resume here…" style="min-height:130px"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label>Evaluation Focus</label>
+          <div class="tag-row">
+            <span class="tag tag-amber selected" onclick="toggleTag(this,'eval')">⚡ ATS Match</span>
+            <span class="tag tag-rose selected" onclick="toggleTag(this,'eval')">📊 Mercer IPE</span>
+            <span class="tag tag-purple selected" onclick="toggleTag(this,'eval')">🎯 Skill Gaps</span>
+            <span class="tag tag-teal selected" onclick="toggleTag(this,'eval')">✅ Interview Fit</span>
+          </div>
+        </div>
+
+        <button class="btn btn-teal" id="screenBtn" onclick="generateScreening()">🔍 Generate Screening Report</button>
+      </div>
+
+      <!-- SCREENER OUTPUT -->
+      <div class="output-card" style="margin-top:0">
+        <div class="output-header">
+          <div class="output-title-row">
+            <div class="card-icon icon-teal" style="width:36px;height:36px;font-size:.95rem">📊</div>
+            <div class="output-title">HR Screening Report</div>
+            <span class="status-badge badge-ready" id="screenBadge">● Ready</span>
+          </div>
+          <div class="action-btns">
+            <button class="action-btn copy-btn" onclick="copyOutput('screenOutput')" id="screenCopyBtn" disabled>📋 Copy</button>
+            <button class="action-btn pdf-btn" onclick="exportPDF()" id="screenPDFBtn" disabled>⬇ Export PDF</button>
+            <button class="action-btn" onclick="clearOutput('screen')" id="screenClearBtn" disabled>🗑 Clear</button>
+          </div>
+        </div>
+        <div class="output-body md-output" id="screenOutput">
+          <div class="placeholder-box">
+            <div class="ph-icon">🎯</div>
+            <p>Upload a resume & JD to generate your screening report…</p>
+          </div>
+        </div>
+
+        <!-- Score Row (hidden until output) -->
+        <div class="score-row" id="scoreRow" style="display:none">
+          <div class="score-box">
+            <div class="score-val score-green" id="matchScore">—</div>
+            <div class="score-lbl">Match Score</div>
+          </div>
+          <div class="score-box">
+            <div class="score-val score-amber" id="atsResult">—</div>
+            <div class="score-lbl">ATS Result</div>
+          </div>
+          <div class="score-box">
+            <div class="score-val score-purple" id="interviewRec">—</div>
+            <div class="score-lbl">Interview Rec.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO STRIP -->
+  <div class="info-strip">
+    <div class="info-chip">🏢 Coventine Digital Pvt Ltd</div>
+    <div class="info-chip" id="dateChip">📅 Loading…</div>
+    <div class="info-chip">🔒 Confidential — HR Only</div>
+    <div class="info-chip">⚡ Llama 3.3 70B Instruct</div>
+    <div class="info-chip">🌐 Hugging Face API</div>
+  </div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<footer>
+  Prepared using AI-powered Recruitment Assistant &nbsp;·&nbsp;
+  <strong>Confidential – For Coventine Digital Recruitment Evaluation Only</strong>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let HF_API_KEY = '';
+const MODEL = 'meta-llama/Llama-3.3-70B-Instruct';
+let selectedSetup = '', selectedTone = '';
+
+// ── INIT ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('hf_api_key');
+  if (saved) { HF_API_KEY = saved; document.getElementById('apiKeyInput').value = saved; updateApiStatus(true); }
+  document.getElementById('dateChip').textContent = '📅 ' + new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+});
+
+// ── API KEY ────────────────────────────────────────────────
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key.startsWith('hf_')) { showAlert('Please enter a valid Hugging Face API key starting with hf_','error'); return; }
+  HF_API_KEY = key;
+  localStorage.setItem('hf_api_key', key);
+  updateApiStatus(true);
+  showAlert('✅ API Key connected successfully! You can now generate content.','success');
+}
+function updateApiStatus(connected) {
+  document.getElementById('apiDot').className = 'dot' + (connected ? ' connected' : '');
+  document.getElementById('apiStatus').textContent = connected ? 'API Connected' : 'API Not Connected';
+}
+
+// ── TABS ──────────────────────────────────────────────────
+function switchTab(mode, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.className = 'tab-btn active-' + (mode === 'jd' ? 'jd' : 'screen');
+  document.getElementById('panel-' + mode).classList.add('active');
+}
+
+// ── TAGS ─────────────────────────────────────────────────
+function toggleTag(el, group) {
+  if (group === 'setup') {
+    document.querySelectorAll('.tag-blue, .tag-teal, .tag-purple').forEach(t => { if(t.closest('#panel-jd')) t.classList.remove('selected'); });
+    el.classList.toggle('selected');
+    selectedSetup = el.classList.contains('selected') ? el.textContent.trim() : '';
+  } else if (group === 'tone') {
+    document.querySelectorAll('.tag-amber, .tag-rose').forEach(t => { if(t.closest('#panel-jd')) t.classList.remove('selected'); });
+    el.classList.toggle('selected');
+    selectedTone = el.classList.contains('selected') ? el.textContent.trim() : '';
+  } else {
+    el.classList.toggle('selected');
+  }
+}
+
+// ── ALERT ────────────────────────────────────────────────
+function showAlert(msg, type='error') {
+  const box = document.getElementById('alertBox');
+  box.textContent = msg;
+  box.className = 'alert show alert-' + type;
+  setTimeout(() => box.className = 'alert', 4000);
+}
+
+// ── HF API CALL ──────────────────────────────────────────
+async function callHF(systemPrompt, userPrompt) {
+  if (!HF_API_KEY) throw new Error('No API key. Please connect your Hugging Face API key above.');
+  const res = await fetch(`https://api-inference.huggingface.co/models/${MODEL}/v1/chat/completions`, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + HF_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }],
+      max_tokens: 2048, temperature: 0.6, stream: false
+    })
+  });
+  if (!res.ok) { const err = await res.text(); throw new Error('API Error: ' + res.status + ' — ' + err); }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+// ── MARKDOWN TO HTML ─────────────────────────────────────
+function mdToHtml(md) {
+  return md
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/^---+$/gm,'<hr/>')
+    .replace(/^\* (.+)$/gm,'<ul><li>$1</li></ul>')
+    .replace(/^- (.+)$/gm,'<ul><li>$1</li></ul>')
+    .replace(/<\/ul>
+<ul>/g,'')
+    .replace(/
+
+/g,'<br/><br/>')
+    .replace(/
+/g,'<br/>');
+}
+
+// ── GENERATE JD ──────────────────────────────────────────
+async function generateJD() {
+  const input = document.getElementById('jdInput').value.trim();
+  if (!input) { showAlert('Please describe the role first.','error'); return; }
+  if (!HF_API_KEY) { showAlert('Please connect your Hugging Face API key first.','warn'); return; }
+
+  const company = document.getElementById('jdCompany').value.trim();
+  const location = document.getElementById('jdLocation').value.trim();
+  const level = document.getElementById('jdLevel').value;
+
+  const ctx = [
+    company && 'Company: ' + company,
+    location && 'Location: ' + location,
+    level && 'Seniority: ' + level,
+    selectedSetup && 'Work Setup: ' + selectedSetup,
+    selectedTone && 'Tone: ' + selectedTone
+  ].filter(Boolean).join(' | ');
+
+  const systemPrompt = `You are an HR & tech recruitment expert. Transform rough job inputs into complete, polished, inclusive job descriptions ready for LinkedIn and job boards.
+
+ALWAYS structure output in exactly this order with Markdown headings:
+# Job Title
+## About the Role
+## Key Responsibilities
+## Requirements
+## Nice-to-Have
+
+Rules:
+- Use bullet points for responsibilities and requirements
+- Be professional, inclusive, non-discriminatory
+- Use (optional) placeholder if details are missing
+- Never fabricate facts or salaries
+- Keep it concise but compelling`;
+
+  const userPrompt = ctx ? `Input: ${input}
+
+Context: ${ctx}` : `Input: ${input}`;
+
+  const btn = document.getElementById('jdBtn');
+  const output = document.getElementById('jdOutput');
+  btn.disabled = true; btn.textContent = '⏳ Generating…';
+  document.getElementById('jdBadge').className = 'status-badge badge-border';
+  document.getElementById('jdBadge').textContent = '● Generating';
+  output.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Crafting your Job Description…</div></div>';
+
+  try {
+    const result = await callHF(systemPrompt, userPrompt);
+    output.className = 'output-body md-output';
+    output.innerHTML = mdToHtml(result);
+    document.getElementById('jdBadge').className = 'status-badge badge-pass';
+    document.getElementById('jdBadge').textContent = '● Done';
+    document.getElementById('jdCopyBtn').disabled = false;
+    document.getElementById('jdClearBtn').disabled = false;
+    output.dataset.raw = result;
+  } catch(e) {
+    showAlert('❌ ' + e.message, 'error');
+    output.innerHTML = '<div class="placeholder-box"><div class="ph-icon">⚠️</div><p>Generation failed. Check your API key.</p></div>';
+    document.getElementById('jdBadge').className = 'status-badge badge-fail';
+    document.getElementById('jdBadge').textContent = '● Error';
+  }
+  btn.disabled = false; btn.textContent = '✦ Generate Job Description';
+}
+
+// ── GENERATE SCREENING ────────────────────────────────────
+async function generateScreening() {
+  const jd = document.getElementById('screenJD').value.trim();
+  const cv = document.getElementById('screenCV').value.trim();
+  if (!jd || !cv) { showAlert('Please paste both the Job Description and Resume.','error'); return; }
+  if (!HF_API_KEY) { showAlert('Please connect your Hugging Face API key first.','warn'); return; }
+
+  const systemPrompt = `You are an expert HR screening specialist using ATS and Mercer IPE methodology.
+
+Given a JD and Resume, produce ONLY an HR Screening Report in this EXACT format with Markdown:
+
+# HR Screening Report
+
+## Candidate Information
+- **Name:** [from CV or Not Specified]
+- **Email:** [from CV or Not Specified]
+- **Phone:** [from CV or Not Specified]
+- **Location:** [from CV or Not Specified]
+
+## Job Applied For
+- **Job Title:** [from JD]
+- **Date of Screening:** ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})}
+
+## Match Analysis
+**Overall Match Score:** XX%
+
+### Strengths / Alignment
+- [bullet list of aligned areas]
+
+### Missing Keywords / Skills
+- [bullet list]
+
+### Experience Gaps
+- [bullet list or None identified]
+
+## ATS Screening Result
+**Result:** Pass / Borderline / Fail
+**Explanation:** [1–2 sentences]
+
+## Interview Recommendation
+**Recommended:** Yes / Maybe / No
+**Rationale:** [2–3 sentences]
+
+---
+*Prepared using AI-powered Resume Analyzer*
+*Confidential – For Coventine Digital Recruitment Evaluation Only*
+
+STRICT RULES:
+- Do NOT rewrite or improve the resume
+- Infer "Not Specified" for missing data
+- Be objective and quantitative`;
+
+  const userPrompt = `JOB DESCRIPTION:
+${jd}
+
+---
+
+RESUME / CV:
+${cv}`;
+
+  const btn = document.getElementById('screenBtn');
+  const output = document.getElementById('screenOutput');
+  btn.disabled = true; btn.textContent = '⏳ Analysing…';
+  document.getElementById('screenBadge').className = 'status-badge badge-border';
+  document.getElementById('screenBadge').textContent = '● Analysing';
+  document.getElementById('scoreRow').style.display = 'none';
+  output.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Running ATS + Mercer IPE evaluation…</div></div>';
+
+  try {
+    const result = await callHF(systemPrompt, userPrompt);
+    output.className = 'output-body md-output';
+    output.innerHTML = mdToHtml(result);
+    output.dataset.raw = result;
+
+    // Parse score, ATS, interview
+    const scoreMatch = result.match(/(\d{1,3})%/);
+    const atsMatch = result.match(/Result:\s*(Pass|Borderline|Fail)/i);
+    const intMatch = result.match(/Recommended:\s*(Yes|Maybe|No)/i);
+
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1]);
+      document.getElementById('matchScore').textContent = score + '%';
+      document.getElementById('matchScore').className = 'score-val ' + (score>=75?'score-green':score>=50?'score-amber':'score-red');
+    }
+    if (atsMatch) {
+      const ats = atsMatch[1];
+      document.getElementById('atsResult').textContent = ats;
+      document.getElementById('atsResult').className = 'score-val ' + (ats==='Pass'?'score-green':ats==='Borderline'?'score-amber':'score-red');
+      document.getElementById('screenBadge').className = 'status-badge badge-' + ats.toLowerCase().replace('borderline','border');
+      document.getElementById('screenBadge').textContent = '● ' + ats;
+    }
+    if (intMatch) {
+      const rec = intMatch[1];
+      document.getElementById('interviewRec').textContent = rec;
+      document.getElementById('interviewRec').className = 'score-val ' + (rec==='Yes'?'score-green':rec==='Maybe'?'score-amber':'score-red');
+    }
+    document.getElementById('scoreRow').style.display = 'grid';
+    document.getElementById('screenCopyBtn').disabled = false;
+    document.getElementById('screenPDFBtn').disabled = false;
+    document.getElementById('screenClearBtn').disabled = false;
+  } catch(e) {
+    showAlert('❌ ' + e.message, 'error');
+    output.innerHTML = '<div class="placeholder-box"><div class="ph-icon">⚠️</div><p>Screening failed. Check your API key.</p></div>';
+    document.getElementById('screenBadge').className = 'status-badge badge-fail';
+    document.getElementById('screenBadge').textContent = '● Error';
+  }
+  btn.disabled = false; btn.textContent = '🔍 Generate Screening Report';
+}
+
+// ── COPY ─────────────────────────────────────────────────
+function copyOutput(id) {
+  const el = document.getElementById(id);
+  const text = el.dataset.raw || el.innerText;
+  navigator.clipboard.writeText(text).then(() => showAlert('✅ Copied to clipboard!','success'));
+}
+
+// ── CLEAR ────────────────────────────────────────────────
+function clearOutput(mode) {
+  if (mode === 'jd') {
+    document.getElementById('jdOutput').className = 'output-body';
+    document.getElementById('jdOutput').innerHTML = '<div class="placeholder-box"><div class="ph-icon">📝</div><p>Your polished JD will appear here…</p></div>';
+    document.getElementById('jdBadge').className = 'status-badge badge-ready';
+    document.getElementById('jdBadge').textContent = '● Ready';
+    document.getElementById('jdCopyBtn').disabled = true;
+    document.getElementById('jdClearBtn').disabled = true;
+  } else {
+    document.getElementById('screenOutput').className = 'output-body md-output';
+    document.getElementById('screenOutput').innerHTML = '<div class="placeholder-box"><div class="ph-icon">🎯</div><p>Upload a resume & JD to generate your screening report…</p></div>';
+    document.getElementById('scoreRow').style.display = 'none';
+    document.getElementById('screenBadge').className = 'status-badge badge-ready';
+    document.getElementById('screenBadge').textContent = '● Ready';
+    document.getElementById('screenCopyBtn').disabled = true;
+    document.getElementById('screenPDFBtn').disabled = true;
+    document.getElementById('screenClearBtn').disabled = true;
+  }
+}
+
+// ── PDF EXPORT ───────────────────────────────────────────
+function exportPDF() {
+  const raw = document.getElementById('screenOutput').dataset.raw || '';
+  if (!raw) { showAlert('No report to export.','warn'); return; }
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <title>HR Screening Report – Coventine Digital</title>
+  <style>
+    body{font-family:'Segoe UI',sans-serif;max-width:780px;margin:40px auto;color:#1e293b;line-height:1.7;font-size:14px}
+    h1{font-size:1.4rem;color:#3730a3;border-bottom:2px solid #e0e7ff;padding-bottom:8px;margin-bottom:16px}
+    h2{font-size:1.05rem;color:#5b6ef5;margin:18px 0 8px}
+    h3{font-size:.95rem;color:#374151;margin:14px 0 6px}
+    ul{padding-left:18px} li{margin-bottom:4px}
+    strong{color:#1e293b}
+    hr{border:none;border-top:1px solid #e2e8f0;margin:14px 0}
+    em{color:#64748b;font-size:.82rem}
+    .footer{margin-top:30px;padding-top:14px;border-top:2px solid #5b6ef5;font-size:.75rem;color:#64748b;text-align:center}
+  </style>
+  </head><body>
+  ${raw.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/^\- (.+)$/gm,'<li>$1</li>').replace(/
+/g,'<br/>')}
+  <div class="footer">Prepared using AI-powered Resume Analyzer | Confidential – For Coventine Digital Recruitment Evaluation Only</div>
+  </body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 600);
+}
+</script>
+</body>
+</html>
